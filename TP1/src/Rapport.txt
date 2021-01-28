@@ -1,0 +1,16 @@
+Q1: Lorsque l'on construit notre robot dans la partie 1 du TP, on effectue plusieurs transformations OpenGL sur chaque partie de l'oiseau.
+    Ici on voudrait déplacer un objet quelconque sur un point arbitraire, faire un changement d'échelle puis une rotation et un enfin
+    un dernier déplacement. Écrivez la série de commandes OpenGL pour arriver à ces résultats en affichant l'objet (pas besoin d'arguments dans les fonctions) et
+    surtout l'ordre des commandes que vous auriez donné dans le code pour arriver à ce résultat en justifiant pourquoi (vous pouvez détailler
+    le calcul mathématique matriciel pour vous aider à justifier).
+
+
+
+
+
+Q2: Dans ce TP dans la partie 2, on vous a demandé d'utiliser des VBOs pour afficher la fameuse théière!
+    Visuellement rien ne change, mais quelles sont les différences entre les deux méthodes utilisées ?
+    Pourquoi d'ailleurs ne remarque-t-on aucune différence ?
+
+
+
