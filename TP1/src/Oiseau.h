@@ -85,8 +85,8 @@ public:
         // créer le VBO la connectivité
         //...
         glGenBuffers(1, &vboTheiereConnec);
-        glBindBuffer(GL_ARRAY_BUFFER, vboTheiereConnec);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(gTheiereConnec), gTheiereConnec, GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboTheiereConnec);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gTheiereConnec), gTheiereConnec, GL_STATIC_DRAW);
 
         glBindVertexArray(0);
     }
@@ -103,15 +103,14 @@ public:
     {
         glBindVertexArray( vao );
         // (partie 2) MODIFICATIONS ICI ...
-        //...
-
-        //glDrawElements(GL_TRIANGLES, sizeof(gTheiereConnec), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, sizeof(gTheiereConnec)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 
         // vous pouvez utiliser temporairement cette fonction pour la première partie du TP, mais vous ferez mieux dans la seconde partie du TP
-        glBegin( GL_TRIANGLES );
+        /*glBegin( GL_TRIANGLES );
         for ( unsigned int i = 0 ; i < sizeof(gTheiereConnec)/sizeof(GLuint) ; i++ )
             glVertex3fv( &(gTheiereSommets[3*gTheiereConnec[i]] ) );
-        glEnd( );
+        
+        glEnd( );*/
 
         glBindVertexArray(0);
     }
@@ -179,7 +178,9 @@ public:
                     break;
 
                 case 2: // la théière
-                    matrModel.Scale( 0.45, 0.45, 0.45 );
+                    matrModel.Translate(0.0, 0.0, -taille);
+                    matrModel.Rotate(90, 1.0, 0.0, 0.0);
+                    matrModel.Scale( 0.45 * taille, 0.45 * taille, 0.45 * taille);
                     glUniformMatrix4fv(locmatrModel, 1, GL_FALSE, matrModel);
                     afficherTheiere();
                     break;

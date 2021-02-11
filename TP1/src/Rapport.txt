@@ -4,13 +4,25 @@ Q1: Lorsque l'on construit notre robot dans la partie 1 du TP, on effectue plusi
     surtout l'ordre des commandes que vous auriez donné dans le code pour arriver à ce résultat en justifiant pourquoi (vous pouvez détailler
     le calcul mathématique matriciel pour vous aider à justifier).
 
+Les commandes seraient faites dans l'ordre suivant:
 
+1) glRotatef();
+2) glTranslatef();
+3) glScalef();
 
+Ceci s'explique par le fait que l'ordre des opérations dans un calcul matriciel est important.
 
 
 Q2: Dans ce TP dans la partie 2, on vous a demandé d'utiliser des VBOs pour afficher la fameuse théière!
     Visuellement rien ne change, mais quelles sont les différences entre les deux méthodes utilisées ?
     Pourquoi d'ailleurs ne remarque-t-on aucune différence ?
 
+L'utilisation des VBOs permet de dessiner la théière en tant qu'objet, alors que l'autre méthode
+dessine les sommets et les connexions un par un. Ceci même à une meilleure performance pour les objets
+qui contiennent beaucoup de sommets, car ils sont chargés directement dans le GPU alors que pour l'autre
+méthode le CPU envoie beaucoup d'instructions au GPU alors que ces sommets ne changent pas.
+
+On ne remarque aucune différence car on utilise le même tableau contenant les faces des triangles pour les 
+deux méthodes, ce qui génère le même résultat
 
 
