@@ -338,6 +338,7 @@ void FenetreTP::sourisClic( int button, int state, int x, int y )
             break;
         case TP_BOUTON_DROIT: // Sélectionner des objets
             Etat::enSelection = true;
+            std::cout << Etat::enSelection;
             break;
         }
         Etat::sourisPosPrec.x = x;

@@ -210,23 +210,27 @@ public:
         // des 0 partout ailleurs, mais on ne veut rien tracer à l'écran
         // pour le moment: on s'organise pour que le test du stencil ne
         // passe jamais tout en remplissant le stencil de valeurs.
-        glEnable( GL_CULL_FACE ); glCullFace( GL_BACK ); // ne pas afficher les faces arrière
+        glEnable( GL_CULL_FACE ); 
+        glCullFace( GL_BACK ); // ne pas afficher les faces arrière
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
         // partie 1: modifs ici ...
         // ...
-        //glStencilOp( GLenum sfail, GLenum zfail, GLenum pass );
-        //glStencilFunc( GLenum func, GLint ref, GLuint mask );
-        //afficherParoisYpos(); // paroi en +Y
+        glEnable(GL_STENCIL_TEST);
 
-        //glStencilFunc( GLenum func, GLint ref, GLuint mask );
-        //afficherParoisXpos(); // paroi en +X
+        glStencilOp( GL_REPLACE, GL_REPLACE, GL_REPLACE);
 
-        //glStencilFunc( GLenum func, GLint ref, GLuint mask );
-        //afficherParoisYneg(); // paroi en -Y
+        glStencilFunc( GL_NEVER, 1, 1);
+        afficherParoisYpos(); // paroi en +Y
 
-        //glStencilFunc( GLenum func, GLint ref, GLuint mask );
-        //afficherParoisXneg(); // paroi en -X
+        glStencilFunc(GL_NEVER, 2, 2);
+        afficherParoisXpos(); // paroi en +X
+
+        glStencilFunc(GL_NEVER, 4, 4);
+        afficherParoisYneg(); // paroi en -Y
+
+        glStencilFunc(GL_NEVER, 8, 8);
+        afficherParoisXneg(); // paroi en -X
 
         glDisable( GL_CULL_FACE );
 
@@ -241,11 +245,52 @@ public:
         glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
         glUniform1i( locillumination, Etat::illumination );
 
-        //glStencilOp( GLenum sfail, GLenum zfail, GLenum pass );
+        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
 
         // et on trace le contenu inversé 4 fois
-        //glStencilFunc( GLenum func, GLint ref, GLuint mask );
-        // ...
+        glStencilFunc(GL_EQUAL, 1, 1); // Y+
+        if (Etat::culling) glStencilFunc(GL_ALWAYS, 1, 1);
+        matrModel.PushMatrix();
+        {
+            matrModel.Translate(0.0, 2 * Etat::bDim.y, 0.0);
+            matrModel.Scale(1, -1, 1);
+            afficherContenu();
+        }
+        matrModel.PopMatrix();
+
+        glStencilFunc(GL_EQUAL, 2, 2); // X+
+        if (Etat::culling) glStencilFunc(GL_ALWAYS, 2, 2);
+        matrModel.PushMatrix();
+        {
+            matrModel.Translate(2 * Etat::bDim.x, 0.0, 0.0);
+            matrModel.Scale(-1, 1, 1);
+            afficherContenu();
+        }
+        matrModel.PopMatrix();
+
+
+        glStencilFunc(GL_EQUAL, 4, 4); // Y-
+        if (Etat::culling) glStencilFunc(GL_ALWAYS, 4, 4);
+        matrModel.PushMatrix();
+        {
+            matrModel.Translate(0.0, -2 * Etat::bDim.y, 0.0);
+            matrModel.Scale(1, -1, 1);
+            afficherContenu();
+        }
+        matrModel.PopMatrix();
+
+
+        glStencilFunc(GL_EQUAL, 8, 8); // X-
+        if (Etat::culling) glStencilFunc(GL_ALWAYS, 8, 8);
+        matrModel.PushMatrix();
+        {
+            matrModel.Translate(-2 * Etat::bDim.x, 0.0, 0.0);
+            matrModel.Scale(-1, 1, 1);
+            afficherContenu();
+        }
+        matrModel.PopMatrix();
+
+        glDisable(GL_STENCIL_TEST);
 
         // avant d'enfin tracer le contenu intérieur
         afficherContenu( );
@@ -260,6 +305,29 @@ public:
     void selectionnerTheiere()
     {
         // partie 2: modifs ici ...
+
+        // s'assurer que toutes les operations sont terminees
+        glFinish();
+
+        GLint cloture[4];
+        glGetIntegerv(GL_VIEWPORT, cloture);
+        GLint posX = Etat::sourisPosPrec.x;
+        GLint posY = cloture[3] - Etat::sourisPosPrec.y;
+
+        glReadBuffer(GL_BACK);
+
+        GLubyte couleur[3];
+        glReadPixels(posX, posY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, couleur);
+
+        for (std::vector<Theiere*>::iterator it = theieres.begin(); it != theieres.end(); it++)
+        {
+            float pixelCol = float(couleur[0]/255);
+            float theiereColor = float((*it)->couleurSel[0]);
+
+            if (abs(pixelCol - theiereColor) < 0.01) {
+                (*it)->estSelectionnee = !(*it)->estSelectionnee;
+            }
+        }
     }
 
     void calculerPhysique( )

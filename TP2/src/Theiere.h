@@ -96,7 +96,9 @@ public:
 
     void avancerPhysique()
     {
-        angle += Etat::dt * vitesse;
+        if (!estSelectionnee) {
+            angle += Etat::dt * vitesse;
+        }
     }
 
     // les variables de la théière
@@ -108,8 +110,8 @@ public:
     float angle;          // en degrés
     float vitesse;        // en degrés/seconde
     float taille;         // en unités
-    //bool estSelectionnee; // la théière est sélectionnée ?
-    //glm::vec3 couleurSel; // la couleur en mode sélection
+    bool estSelectionnee = false; // la théière est sélectionnée ?
+    glm::vec3 couleurSel = glm::vec3(100/255, 0.0, 0.0); // la couleur en mode sélection
 };
 
 FormeSphere* Theiere::sphere = NULL;
