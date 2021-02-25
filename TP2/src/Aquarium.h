@@ -44,6 +44,13 @@ public:
             // assigner une couleur de sélection
             // partie 2: modifs ici ...
 
+            // On prend 14 car on a 18 theieres, 255/18 ~= 14
+            int nombreMaxTheieres = sizeof(hauteur) / sizeof(hauteur[0]);
+            float couleurRougeDefaut = 255 / float(nombreMaxTheieres);
+            float baseColor = (couleurRougeDefaut / 255);
+            glm::vec3 couleurSel(baseColor * (i + 1), 0.0, 0.0);
+            p->couleurSel = couleurSel;
+
             // ajouter cette théière dans la liste
             theieres.push_back( p );
         }
@@ -309,6 +316,8 @@ public:
         // s'assurer que toutes les operations sont terminees
         glFinish();
 
+        glReadBuffer(GL_BACK);
+
         GLint cloture[4];
         glGetIntegerv(GL_VIEWPORT, cloture);
         GLint posX = Etat::sourisPosPrec.x;
@@ -321,10 +330,9 @@ public:
 
         for (std::vector<Theiere*>::iterator it = theieres.begin(); it != theieres.end(); it++)
         {
-            float pixelCol = float(couleur[0]/255);
+            float pixelColor = float(couleur[0]) / 255;
             float theiereColor = float((*it)->couleurSel[0]);
-
-            if (abs(pixelCol - theiereColor) < 0.01) {
+            if (abs(theiereColor - pixelColor) < 0.05) {
                 (*it)->estSelectionnee = !(*it)->estSelectionnee;
             }
         }

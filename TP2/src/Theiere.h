@@ -9,7 +9,7 @@ class Theiere
     static FormeSphere *sphere; // une sphère centrée de rayon 1 pour les yeux
 public:
     Theiere( float r = 1.0, float h = 0.0, float ang = 0.0, float vit = 1.0, float tai = 0.5 )
-        : rayon(r), hauteur(h), angle(ang), vitesse(vit), taille(tai)
+        : rayon(r), hauteur(h), angle(ang), vitesse(vit), taille(tai), estSelectionnee(false)
     {
         // créer une théière graphique
         initialiserGraphique();
@@ -59,9 +59,16 @@ public:
 
             // partie 2: modifs ici ...
             // afficher le corps : la théière
-            glm::vec3 coulCorps( 1.0, 0.2, 0.0 ); // rouge légèrement orangé
+
             // donner la couleur de sélection au besoin (partie 2)
-            glVertexAttrib3fv( locColor, glm::value_ptr(coulCorps) );
+            if (Etat::enSelection) { 
+                glVertexAttrib3fv(locColor, glm::value_ptr(couleurSel)); 
+            }
+            else {
+                glm::vec3 coulCorps(1.0, 0.2, 0.0); // rouge légèrement orangé
+                glVertexAttrib3fv(locColor, glm::value_ptr(coulCorps));
+            }
+
             matrModel.PushMatrix();{
                 matrModel.Scale( taille, taille, taille );
                 matrModel.Rotate( 90, 0, 0, 1 ); // tourner la théière pour avoir son couvercle tangeant à la rotation
@@ -73,7 +80,13 @@ public:
                 glBindVertexArray(0);
 
                 // donner la couleur des yeux
-                glVertexAttrib3f( locColor, 0.8, 0.8, 0.2 ); // jaune
+                if (Etat::enSelection) {
+                    glVertexAttrib3fv(locColor, glm::value_ptr(couleurSel));
+                }
+                else {
+                    glm::vec3 coulYeux(1.0, 1.0, 0.0); // jaune
+                    glVertexAttrib3fv(locColor, glm::value_ptr(coulYeux));
+                }
 
                 // afficher les yeux
                 const GLfloat facteur[2] = { -1.0, 1.0 };
@@ -110,8 +123,8 @@ public:
     float angle;          // en degrés
     float vitesse;        // en degrés/seconde
     float taille;         // en unités
-    bool estSelectionnee = false; // la théière est sélectionnée ?
-    glm::vec3 couleurSel = glm::vec3(100/255, 0.0, 0.0); // la couleur en mode sélection
+    bool estSelectionnee; // la théière est sélectionnée ?
+    glm::vec3 couleurSel; // la couleur en mode sélection
 };
 
 FormeSphere* Theiere::sphere = NULL;

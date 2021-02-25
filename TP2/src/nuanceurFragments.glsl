@@ -43,16 +43,54 @@ const bool utiliseBlinn = true;
 
 in Attribs {
     vec4 couleur;
+    vec3 lumiDir;
+    vec3 obsVec;
+    vec3 normale;
 } AttribsIn;
 
 out vec4 FragColor;
 
+float attenuation = 1.0;
+
+vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
+{
+
+    vec4 coul = vec4(0.0);
+
+    coul += FrontMaterial.ambient * LightSource.ambient;
+
+    float NdotL = max( 0.0, dot( N, L ) );
+    if ( NdotL > 0.0 )
+    {
+        // calcul de la composante diffuse
+        coul += attenuation * AttribsIn.couleur * LightSource.diffuse * NdotL;
+
+        // calcul de la composante spéculaire (Blinn ou Phong : spec = BdotN ou RdotO )
+        float spec = max( 0.0, ( utiliseBlinn ) ?
+                          dot( normalize( L + O ), N ) : // dot( B, N )
+                          dot( reflect( -L, N ), O ) ); // dot( R, O )
+        if ( spec > 0 ) coul += FrontMaterial.specular * LightSource.specular * pow( spec, FrontMaterial.shininess );
+    }
+
+
+    return( coul );
+}
+
 void main( void )
 {
     // la couleur du fragment est la couleur interpolée
-    FragColor = AttribsIn.couleur;
+    vec3 lumiDir = normalize(AttribsIn.lumiDir);
+    vec3 obsVec = normalize(AttribsIn.obsVec);
+    vec3 normale = normalize(gl_FrontFacing ? AttribsIn.normale : - AttribsIn.normale);
 
-    // Mettre un test bidon afin que l'optimisation du compilateur n'élimine la variable "illumination".
-    // Vous ENLEVEREZ ce test inutile!
-    if ( illumination > 10000 ) FragColor.r += 0.001;
+    vec4 coul;
+
+    if(illumination == 1) {
+        coul = calculerReflexion(lumiDir, normale, obsVec);
+    }
+    else {
+        coul = AttribsIn.couleur;
+    }
+    // seuiller chaque composante entre 0 et 1 et assigner la couleur finale du fragmen
+    FragColor = clamp(coul, 0.0, 1.0);
 }
