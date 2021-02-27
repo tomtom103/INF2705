@@ -5,6 +5,12 @@ Q1: Dans l'exemple du cours qui affiche un miroir avec une scène composée
     ici alors que les parois de l'aquarium sont toutes des miroirs ?
 
 
+Ici le plan de coupe n'est pas nécessaire car nous affichons nos reflets
+selon quatres "chiffres" différents selon le reflet (1, 2, 4 ou 8) ainsi,
+chaque miroir (face de l'aquarium) affiche un des reflets soit le reflet du 1,
+soit du 2, etc.
+
+
 Q2: Dans le cadre de ce TP, les réflexions sur les parois sont uniques,
     c'est-à-dire qu'on n'y voit qu'une seule réflexion : celle du contenu de
     l'aquarium.  Toutefois, en présence de deux miroirs face à face, on
