@@ -41,10 +41,7 @@ public:
             // créer une nouvelle théière
             Theiere *p = new Theiere( dist, hauteur[i], angle, vit, taille );
 
-            // assigner une couleur de sélection
-            // partie 2: modifs ici ...
-
-            // On prend 14 car on a 18 theieres, 255/18 ~= 14
+            // On fait en sorte que chaque théière à une couleur unique
             int nombreMaxTheieres = sizeof(hauteur) / sizeof(hauteur[0]);
             float couleurRougeDefaut = 255 / float(nombreMaxTheieres);
             float baseColor = (couleurRougeDefaut / 255);
@@ -250,7 +247,7 @@ public:
         glUniformMatrix4fv( locmatrProj, 1, GL_FALSE, matrProj );
         glUniformMatrix4fv( locmatrVisu, 1, GL_FALSE, matrVisu );
         glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
-        glUniform1i( locillumination, Etat::illumination );
+        glUniform1i(locillumination, Etat::illumination && !Etat::enSelection);
 
         glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
 
@@ -311,9 +308,6 @@ public:
     // sélectionner une théière
     void selectionnerTheiere()
     {
-        // partie 2: modifs ici ...
-
-        // s'assurer que toutes les operations sont terminees
         glFinish();
 
         glReadBuffer(GL_BACK);
@@ -325,14 +319,14 @@ public:
 
         glReadBuffer(GL_BACK);
 
-        GLubyte couleur[3];
-        glReadPixels(posX, posY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, couleur);
+        GLubyte couleur[4];
+        glReadPixels(posX, posY, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, couleur);
 
         for (std::vector<Theiere*>::iterator it = theieres.begin(); it != theieres.end(); it++)
         {
             float pixelColor = float(couleur[0]) / 255;
             float theiereColor = float((*it)->couleurSel[0]);
-            if (abs(theiereColor - pixelColor) < 0.05) {
+            if (abs(theiereColor - pixelColor) < 0.05 && float(couleur[3]) == 255) {
                 (*it)->estSelectionnee = !(*it)->estSelectionnee;
             }
         }

@@ -5,6 +5,9 @@ Q1: Dans l'exemple du cours qui affiche un miroir avec une scène composée
     ici alors que les parois de l'aquarium sont toutes des miroirs ?
 
 
+Dans la scène du cours, le cylindre est dans le miroir selon le point
+de vue de l'utilisateur et l;e contenu réfléchi est généré dans le miroir, puis
+coupé par le stencil pour seulement afficher ce contenu dans le miroir.
 Ici le plan de coupe n'est pas nécessaire car nous affichons nos reflets
 selon quatres "chiffres" différents selon le reflet (1, 2, 4 ou 8) ainsi,
 chaque miroir (face de l'aquarium) affiche un des reflets soit le reflet du 1,
@@ -23,4 +26,10 @@ Q2: Dans le cadre de ce TP, les réflexions sur les parois sont uniques,
     à faire du tracé de rayons.)
     Au total, combien de fois devrait-on alors tracer la scène ?
 
-
+Pour afficher un niveau supplémentaire de réflexion dans chaque miroir, il faudra 
+afficher une deuxième copie de la scène. Pour que chaque mur aie une réflexion du miroir en face,
+il faudrait donc afficher une autre copie de la scène, la première copie est inversée avec un scale,
+la deuxième scène aurait donc la même orientation que l'originale, ce qui permetterais de simuler la réflexion
+d'une réflexion. La première copie aurait donc un translate de X, et la deuxième de 2X.
+Il faudra donc tracer la scène un total de 9 fois, celle dans l'aquarium, et 2 autres copies pour chaque mur (2*4)
+ce qui fait 9.

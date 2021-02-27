@@ -39,7 +39,7 @@ layout (std140) uniform LightModelParameters
 
 uniform int illumination; // on veut calculer l'illumination ?
 
-const bool utiliseBlinn = true;
+const bool utiliseBlinn = false;
 
 in Attribs {
     vec4 couleur;
@@ -52,7 +52,7 @@ out vec4 FragColor;
 
 float attenuation = 1.0;
 
-vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
+vec4 reflexionBlinnPhong( in vec3 L, in vec3 N, in vec3 O )
 {
 
     vec4 coul = vec4(0.0);
@@ -86,7 +86,7 @@ void main( void )
     vec4 coul;
 
     if(illumination == 1) {
-        coul = calculerReflexion(lumiDir, normale, obsVec);
+        coul = reflexionBlinnPhong(lumiDir, normale, obsVec);
     }
     else {
         coul = AttribsIn.couleur;
