@@ -1,7 +1,7 @@
 // Prénoms, noms et matricule des membres de l'équipe:
-// - Prénom1 NOM1 (matricule1)
-// - Prénom2 NOM2 (matricule2)
-#pragma message (": *************** Identifiez les membres de l'équipe dans le fichier 'main.cpp' et commentez cette ligne. ***************")
+// - Thomas Caron (1944066)
+// - Yohann Tahar (1940815)
+// #pragma message (": *************** Identifiez les membres de l'équipe dans le fichier 'main.cpp' et commentez cette ligne. ***************")
 
 #if defined(_WIN32) || defined(WIN32)
 #pragma warning ( disable : 4244 4305 )
@@ -86,8 +86,9 @@ struct
     // partie 2: texture
     int iTexCoul;             // numéro de la texture de couleurs appliquée
     int iTexNorm;             // numéro de la texture de normales appliquée
-} varsUnif = { 1, false, false,
-               0, 0 };
+    // partie 3
+    int tesselation;
+} varsUnif = { 1, false, false, 0, 0, 0 };
 // ( En GLSL, les types 'bool' et 'int' sont de la même taille, ce qui n'est pas le cas en C++.
 // Ci-dessus, on triche donc un peu en déclarant les 'bool' comme des 'int', mais ça facilite la
 // copie directe vers le nuanceur où les variables seront bien de type 'bool'. )
@@ -282,7 +283,7 @@ void chargerNuanceurs()
         // partie 3:
         if ( Etat::utiliseTess )
         {
-            //if ( ( locfacteurDeform = glGetUniformLocation( prog, "facteurDeform" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de facteurDeform" << std::endl;
+            // if ( ( locfacteurDeform = glGetUniformLocation( prog, "facteurDeform" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de facteurDeform" << std::endl;
             if ( ( locTessLevelInner = glGetUniformLocation( prog, "TessLevelInner" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de TessLevelInner (partie 3)" << std::endl;
             if ( ( locTessLevelOuter = glGetUniformLocation( prog, "TessLevelOuter" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de TessLevelOuter (partie 3)" << std::endl;
         }
@@ -508,7 +509,18 @@ void afficherModele()
 
             if ( Etat::utiliseTess )
             {
+                GLfloat TessLevelOuterTab[] = { Etat::TessLevelOuter, Etat::TessLevelOuter, Etat::TessLevelOuter, Etat::TessLevelOuter };
+                GLfloat TessLevelInnerTab[] = { Etat::TessLevelInner, Etat::TessLevelInner, Etat::TessLevelInner, Etat::TessLevelInner };
+                glPatchParameterfv(GL_PATCH_DEFAULT_OUTER_LEVEL, TessLevelOuterTab);
+                glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, TessLevelInnerTab);
+
                 // partie 3: afficher le cube avec des GL_PATCHES
+                glDrawArrays(GL_PATCHES, 0, 4);
+                glDrawArrays(GL_PATCHES, 4, 4);
+                glDrawArrays(GL_PATCHES, 8, 4);
+                glDrawArrays(GL_PATCHES, 12, 4);
+                glDrawArrays(GL_PATCHES, 16, 4);
+                glDrawArrays(GL_PATCHES, 20, 4);
             }
             else
             {
@@ -703,6 +715,7 @@ void FenetreTP::clavier( TP_touche touche )
     case TP_9: // Permuter l'utilisation des nuanceurs de tessellation
         Etat::utiliseTess = !Etat::utiliseTess;
         std::cout << " Etat::utiliseTess=" << Etat::utiliseTess << std::endl;
+        varsUnif.tesselation = Etat::utiliseTess ? 1 : 0;
         // lorsqu'avec la tessellation, forcer le modèle cube
         if ( Etat::utiliseTess ) { Etat::modele = 1; std::cout << " (Avec tessellation, on n'utilise que le cube.)" << std::endl; }
         // recréer les nuanceurs

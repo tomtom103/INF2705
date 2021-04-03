@@ -36,6 +36,8 @@ layout (std140) uniform varsUnif
     int iTexCoul;             // numéro de la texture de couleurs appliquée
     // partie 4: texture
     int iTexNorm;             // numéro de la texture de normales appliquée
+    // partie 3
+    int tesselation;
 };
 
 uniform sampler2D laTextureCoul;
@@ -74,11 +76,12 @@ vec4 calculerReflexion(in int j, in vec3 L, in vec3 N, in vec3 O) // pour la lum
 
 void main( void )
 {
-    vec3 normale = AttribsIn.normale;
+    vec3 normale = gl_FrontFacing ? AttribsIn.normale : -AttribsIn.normale;
 
     vec4 textureCouleur = texture(laTextureCoul, AttribsIn.TexCoord);
 
     if (typeIllumination == 1) {
+        // Phong
         FragColor = FrontMaterial.ambient * LightModel.ambient + FrontMaterial.emission;
 
         for (int j = 0; j < 3; j++) {
@@ -98,8 +101,7 @@ void main( void )
             if (length(textureCouleur.rgb) < 0.5) discard;
         }
         else {
-            // assigner la couleur finale
-            FragColor = clamp(AttribsIn.couleur, 0.0, 1.0);
+            FragColor = AttribsIn.couleur;
         }
     }
 }

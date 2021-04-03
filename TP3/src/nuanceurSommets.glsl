@@ -36,6 +36,8 @@ layout (std140) uniform varsUnif
     int iTexCoul;             // numéro de la texture de couleurs appliquée
     // partie 4: texture
     int iTexNorm;             // numéro de la texture de normales appliquée
+    // partie 3
+    int tesselation;
 };
 
 uniform mat4 matrModel;
@@ -82,18 +84,22 @@ vec4 calculerReflexion(in int j, in vec3 L, in vec3 N, in vec3 O) // pour la lum
 
 void main( void )
 {
-    // transformation standard du sommet
-    gl_Position = matrProj * matrVisu * matrModel * Vertex;
+    if (tesselation == 1) {
+        gl_Position = matrModel * Vertex;
+    }
+    else {
+        gl_Position = matrProj * matrVisu * matrModel * Vertex;
+    }
 
-    vec3 pos = (matrVisu * matrModel * Vertex).xyz;
+    vec3 pos = vec3(matrVisu * matrModel * Vertex);
 
     for (int i = 0; i < 3; i++) {
         AttribsOut.LumiVec[i] = (matrVisu * LightSource.position[i] / LightSource.position[i].w).xyz;
         AttribsOut.LumiVec[i] = normalize(AttribsOut.LumiVec[i] - pos);
     }
 
-    AttribsOut.ObsVec = normalize(-pos);
     AttribsOut.normale = normalize(matrNormale * Normal);
+    AttribsOut.ObsVec = normalize(-pos);
 
     // couleur du sommet
     if (typeIllumination == 0) {
@@ -102,6 +108,7 @@ void main( void )
         for (int j = 0; j < 3; j++) {
             AttribsOut.couleur += calculerReflexion(j, AttribsOut.LumiVec[j], AttribsOut.normale, AttribsOut.ObsVec);
         }
+        AttribsOut.couleur = clamp(AttribsOut.couleur, 0.0, 1.0);
     }
     else {
         AttribsOut.couleur = Color;
