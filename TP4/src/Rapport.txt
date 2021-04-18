@@ -6,16 +6,24 @@ Q1: Dans la partie 1, des points de taille fixe sont affichés à l'écran. Leur
     i) Comment faire pour que la taille d'un point varie de façon inverse à sa distance du plan avant du volume de visualisation, 
        c'est-à-dire qu'il soit plus gros lorsqu'il est plus près de la caméra ?
 
-
+	Pour faire varier la taille d'un point de façon inverse à sa distance du plan, il faut d'abord calculer la profondeur, puis ensuite
+	assigner notre calcul à gl_PointSize. En prenant une profondeur entre 0 et 1, ceci facilite le calcul.
 
     ii) Donnez l'énoncé GLSL que vous utiliseriez pour implanter ceci.
 
-
+	float profondeur = ((matrProj * matrVisu * matrModel * Vertex).z + 1.0) / 2.0
+	gl_PointSize = pointsize * (1 - profondeur)
 
 Q2: Pour afficher un flocon qui tourne sur lui-même, on a appliqué une matrice de rotation sur les quatre sommets.
     i) Pourrait-on faire tourner le flocon en appliquant la même matrice de rotation sur les coordonnées de texture 
        plutôt que sur les coordonnées des sommets?
+
+	Oui c'est possible, mais le résultat ne sera pas exactement celui que l'on veut (ça ne fonctionne pas avec l'échiquier)
+
     ii) Quel problème observerions-nous alors et comment devrait-il être corrigé?
+
+	En faisant une rotation sur la texture carrée, la forme du sprite reste carrée et ne tourne pas, ce qui veut dire qu'elle ne suit pas les coins.
+	Pour régler ce problème, nous pouvons utiliser GL_CLAMP_TO_EDGE, ce qui va indiquer à OpenGL de ne pas étendre la texture aux extrémitès du cadre.
 
     Afin de facilement répondre à cette question, vous pouvez remplacer (temporairement!) l'image du flocon de ce TP par l'image de l'échiquier du TP3.  
     Si vous appliquez ensuite la matrice de rotation sur les coordonnées de texture plutôt que sur les coordonnées des sommets, 
